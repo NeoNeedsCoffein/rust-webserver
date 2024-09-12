@@ -4,6 +4,8 @@ use std::{
     thread
 };
 
+use rust_webserver::ThreadPool;
+
     const OK_HEADER: &str = "HTTP/1.1 200 OK\r\n\r\n";
     const CREATED_HEADER: &str = "HTTP/1.1 201 CREATED\r\n\r\n";
     const ACCECPTED_HEADER: &str = "HTTP/1.1 202 ACCEPTED\r\n\r\n";
@@ -20,11 +22,13 @@ use std::{
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8000").unwrap();
+    let pool = ThreadPool::new(4);
+
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        thread::spawn(move || {
+        pool.execute(|| {
             handle_connection(stream);
         });
     }
