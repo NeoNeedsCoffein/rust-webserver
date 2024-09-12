@@ -1,6 +1,8 @@
 use std::{
     io::{prelude::*, BufReader}, 
-    net::{TcpListener, TcpStream}};
+    net::{TcpListener, TcpStream},
+    thread
+};
 
     const OK_HEADER: &str = "HTTP/1.1 200 OK\r\n\r\n";
     const CREATED_HEADER: &str = "HTTP/1.1 201 CREATED\r\n\r\n";
@@ -22,7 +24,9 @@ fn main() {
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        handle_connection(stream);
+        thread::spawn(move || {
+            handle_connection(stream);
+        });
     }
 }
 
